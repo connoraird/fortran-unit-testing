@@ -5,7 +5,7 @@ clean_build=false
 build_executables=false
 run_tests=false
 run_main=false
-cmake_dir="/Users/connortaird/Code/fortran-unit-testing/tests/test-drive"
+cmake_dir="/Users/connoraird/work/fortran-unit-testing/tests/test-drive"
 
 help() {
   echo "Usage:"

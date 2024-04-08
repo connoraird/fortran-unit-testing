@@ -1,18 +1,16 @@
-program pi
-    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+module calc_pi
+    use, intrinsic :: iso_fortran_env
 
     implicit none
 
 contains 
-    subroutine calc_pi()
+    subroutine get_pi()
         implicit none
 
-        integer(kind=int64), intent(in) :: num_steps
-        real(dp), intent(out)           :: pi
-        
-        real(dp)                        :: start, stop
-        character(len=:), allocatable   :: a
-        integer                         :: argl
+        integer(kind=int64)           :: num_steps
+        real(kind=real64)             :: start, stop, mypi
+        character(len=:), allocatable :: a
+        integer                       :: argl
 
         num_steps = 1000000000
 
@@ -30,24 +28,21 @@ contains
         write(*,'(A,1I16,A)') "                  ",1," process"
 
         call cpu_time(start)
-        pi = calc_pi(num_steps)
+        mypi = calculate_pi(num_steps)
         call cpu_time(stop)
 
         ! output value of PI and time taken
         ! note cpu_time is only specified as being microsecond res
 
-        write(*,'(A,1F12.10,A)') "Obtained value of PI: ", pi
+        write(*,'(A,1F12.10,A)') "Obtained value of PI: ", mypi
         write(*,'(A,1F12.5,A)') "Time taken:           ",(stop-start), " seconds"
-    end subroutine calc_pi
+    end subroutine get_pi
 
-    function calc_pi(num_steps) result(pi)
+    function calculate_pi(num_steps) result(mypi)
         implicit none 
 
-        integer(kind=int64)             :: num_steps
-        real(dp)                        :: pi
-        
-        integer(kind=int64)             :: i
-        real(dp)                        :: step, x, s
+        integer(kind=int64) :: num_steps, i
+        real(kind=real64)   :: mypi, step, x, s
 
         ! Initialise time counter and sum: set step size
         s = 0d0
@@ -59,7 +54,7 @@ contains
         end do
 
         ! Evaluate PI from the final sum value, and stop the clock
-        pi = s * step
-    end function calc_pi
+        mypi = s * step
+    end function calculate_pi
 
-end program pi
+end module calc_pi

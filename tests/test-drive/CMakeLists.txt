@@ -37,12 +37,11 @@ set(PROJ_SRC_DIR "${PROJECT_SOURCE_DIR}/../../src")
 set(PROJ_TEST_DIR "${PROJECT_SOURCE_DIR}")
 
 file(GLOB PROJ_SOURCES          "${PROJ_SRC_DIR}/*.f90")
-file(GLOB PROJ_PF_SOURCES       "${PROJ_SRC_DIR}/packing_fraction/*.f90")
 file(GLOB PROJ_TEST_SOURCES     "${PROJ_TEST_DIR}/*.f90")
 
 # Build src executable
-add_executable("${PROJ_NAME}" "${PROJ_SOURCES}" "${PROJ_PF_SOURCES}")
+add_executable("${PROJ_NAME}" "${PROJ_SOURCES}")
 
 # Build test executable
-add_executable("${PROJ_NAME}-test" "${PROJ_SOURCES}" "${PROJ_PF_SOURCES}" "${PROJ_TEST_SOURCES}")
+add_executable("${PROJ_NAME}-test" "${PROJ_SOURCES}" "${PROJ_TEST_SOURCES}")
 target_link_libraries("${PROJ_NAME}-test" INTERFACE "${_lib}")
