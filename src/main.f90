@@ -1,28 +1,8 @@
-program hello_world
+program main
     use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
-    use packing_fraction
+    use pi
     implicit none
 
-    real(dp) :: pf
-    real(dp) :: width, height, radius
-    integer :: num_of_samples
+    call calc_pi()
 
-    print *, 'Box width:'
-    read(*, *) width
-    print *, 'Box height:'
-    read(*, *) height
-    print *, 'Circle radius:'
-    read(*, *) radius
-    print *, 'Total number of samples:'
-    read(*, *) num_of_samples
-
-    print*, 'Input are:' 
-    print *, 'Box width: ', width
-    print *, 'Box height: ', height
-    print *, 'Circle radius: ', radius
-    print *, 'Total number of samples: ', num_of_samples
-
-    call get_packing_fraction(pf, width, height, radius, num_of_samples)
-
-    print *, "Packing fraction = ", pf
-end program hello_world
+end program main
