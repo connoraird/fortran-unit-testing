@@ -58,7 +58,7 @@ fi
 
 if [ "$run_tests" = "true" ]
 then
-    ./fortran-unit-testing-with-test-drive-test
+    ./fortran-unit-testing-with-test-drive-tester
 fi
 
 if [ "$run_main" = "true" ]

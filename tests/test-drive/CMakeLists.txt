@@ -1,35 +1,35 @@
 cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 
 # Set project name
-set(PROJ_NAME "fortran-unit-testing-with-test-drive" CACHE STRING "Project name.")
-project("${PROJ_NAME}"
+project(
+  "fortran-unit-testing-with-test-drive"
   LANGUAGES "Fortran"
   VERSION "0.0.1"
   DESCRIPTION "Playground project for testing test-drive"
 )
 
 # Get test-drive lib
-set(_lib "test-drive")
-set(_pkg "TEST_DRIVE")
-set(_url "https://github.com/fortran-lang/test-drive")
+set(test_lib "test-drive")
+set(test_pkg "TEST_DRIVE")
+set(test_url "https://github.com/fortran-lang/test-drive")
 
-message(STATUS "Retrieving ${_lib} from ${_url}")
+message(STATUS "Retrieving ${test_lib} from ${test_url}")
 include(FetchContent)
 FetchContent_Declare(
-    "${_lib}"
-    GIT_REPOSITORY "${_url}"
+    "${test_lib}"
+    GIT_REPOSITORY "${test_url}"
     GIT_TAG "HEAD"
     )
-FetchContent_MakeAvailable("${_lib}")
+FetchContent_MakeAvailable("${test_lib}")
 
-add_library("${_lib}::${_lib}" INTERFACE IMPORTED)
-target_link_libraries("${_lib}::${_lib}" INTERFACE "${_lib}")
+add_library("${test_lib}::${test_lib}" INTERFACE IMPORTED)
+target_link_libraries("${test_lib}::${test_lib}" INTERFACE "${test_lib}")
 
 # We need the module directory in the subproject before we finish the configure stage
-FetchContent_GetProperties("${_lib}" SOURCE_DIR "${_pkg}_SOURCE_DIR")
-FetchContent_GetProperties("${_lib}" BINARY_DIR "${_pkg}_BINARY_DIR")
-if(NOT EXISTS "${${_pkg}_BINARY_DIR}/include")
-    make_directory("${${_pkg}_BINARY_DIR}/include")
+FetchContent_GetProperties("${test_lib}" SOURCE_DIR "${test_pkg}_SOURCE_DIR")
+FetchContent_GetProperties("${test_lib}" BINARY_DIR "${test_pkg}_BINARY_DIR")
+if(NOT EXISTS "${${test_pkg}_BINARY_DIR}/include")
+    make_directory("${${test_pkg}_BINARY_DIR}/include")
 endif()
 
 # Define src and test files
@@ -37,11 +37,37 @@ set(PROJ_SRC_DIR "${PROJECT_SOURCE_DIR}/../../src")
 set(PROJ_TEST_DIR "${PROJECT_SOURCE_DIR}")
 
 file(GLOB PROJ_SOURCES          "${PROJ_SRC_DIR}/*.f90")
-file(GLOB PROJ_TEST_SOURCES     "${PROJ_TEST_DIR}/*.f90")
+file(GLOB PROJ_TEST_SOURCES     "${PROJ_TEST_DIR}/tests/*.f90")
+
+# Filter out the main.cxx file. We can only have one main() function in our tests
+set(PROJ_SOURCES_EXC_MAIN ${PROJ_SOURCES})
+list(FILTER PROJ_SOURCES_EXC_MAIN EXCLUDE REGEX ".*main.f90")
 
 # Build src executable
-add_executable("${PROJ_NAME}" "${PROJ_SOURCES}")
+add_executable("${PROJECT_NAME}" "${PROJ_SOURCES}")
 
-# Build test executable
-add_executable("${PROJ_NAME}-test" "${PROJ_SOURCES}" "${PROJ_TEST_SOURCES}")
-target_link_libraries("${PROJ_NAME}-test" INTERFACE "${_lib}")
+# Unit testing
+set(
+  tests
+  "calc_pi"
+)
+foreach(t IN LISTS tests)
+  string(MAKE_C_IDENTIFIER ${t} t) 
+  list(APPEND test-srcs "${PROJ_TEST_DIR}/test_${t}.f90")
+endforeach()
+
+add_executable(
+  "${PROJECT_NAME}-tester"
+  "${PROJ_TEST_DIR}/main.f90"
+  "${PROJ_TEST_SOURCES}"
+  "${PROJ_SOURCES_EXC_MAIN}"
+)
+target_link_libraries(
+  "${PROJECT_NAME}-tester"
+  PRIVATE
+  "test-drive::test-drive"
+)
+
+foreach(t IN LISTS tests)
+  add_test("${PROJECT_NAME}/${t}" "${PROJECT_NAME}-tester" "${t}")
+endforeach()
